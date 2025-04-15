@@ -115,6 +115,12 @@ class Network(object):
         sp.Popen(["nmcli", "con", "modify", self.AP_SSID, "802-11-wireless.mode", "ap", "802-11-wireless.band", "bg", "ipv4.method", "shared"]).wait()
         sp.Popen(["nmcli", "con", "modify", self.AP_SSID, "wifi-sec.key-mgmt", "wpa-psk", "wifi-sec.psk", self.AP_PASS]).wait()
 
+        # Patch important pour DHCP auto OK (ajout WPA2 - RSN)
+        sp.Popen(["nmcli", "con", "modify", self.AP_SSID,
+                  "802-11-wireless-security.proto", "RSN",
+                  "802-11-wireless-security.pairwise", "CCMP",
+                  "802-11-wireless-security.group", "CCMP"]).wait()
+
         if self.launch_hotstop():
             return {"status": True,
                     "message": "AP started",
@@ -171,11 +177,6 @@ class Network(object):
             if self.iface_in in line:
                 ssids = re.search("^[a-zA-Z]+\-[0-9a-f]{4}", line)
                 if ssids:
-                    sp.Popen(["nmcli", "con", "delete", ])
-                    sh = sp.Popen(["nmcli", "con", "delete", ssids[0]], stdout=sp.PIPE, stderr=sp.PIPE)
-                    sh = sh.communicate()
-
-                    if re.match(".*[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}.*", sh[0].decode("utf8")):
-                        return True
-                    else:
-                        return False
+                    sp.Popen(["nmcli", "con", "delete", ssids[0]], stdout=sp.PIPE, stderr=sp.PIPE).wait()
+                    return True
+        return False
