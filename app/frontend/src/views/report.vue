@@ -43,8 +43,8 @@
                     <h3 style="margin: 0; padding-left:10px;">{{ $t("report.report_of") }} {{device.name}}</h3>
                     <div class="device-ctx-legend">
                         {{ $t("report.pcap_sha1") }} {{ pcap.SHA1 }}<br />
-                        {{ $t("report.capture_started") }} {{ pcap["First packet time"].split(",")[0] }}<br />
-                        {{ $t("report.capture_ended") }} {{ pcap["Last packet time"].split(",")[0] }}<br />
+                        {{ $t("report.capture_started") }} {{ (pcap["First packet time"] || "N/A").split(",")[0] }}
+                        {{ $t("report.capture_ended") }} {{ (pcap["Last packet time"] || "N/A").split(",")[0] }}
                         {{ $t("report.detection_methods") }} {{ detection_methods }}
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                         <li class="alert" v-for="alert in alerts.high" :key="alert.message">
                             <div class="alert-header">
                                 <span class="high-label">{{ $t("report.high") }}</span>
-                                <span class="alert-id">{{ alert.id }}</span> 
+                                <span class="alert-id">{{ alert.id }}</span>
                                 <span class="btn-whitelist" v-on:click="add_whitelist(alert.host)">Add to the whitelist</span>
                             </div>
                             <div class="alert-body">
@@ -64,7 +64,7 @@
                         <li class="alert" v-for="alert in alerts.moderate" :key="alert.message">
                             <div class="alert-header">
                                 <span class="moderate-label">{{ $t("report.moderate") }}</span>
-                                <span class="alert-id">{{ alert.id }}</span> 
+                                <span class="alert-id">{{ alert.id }}</span>
                                 <span class="btn-whitelist" v-on:click="add_whitelist(alert.host)">Add to the whitelist</span>
                             </div>
                             <div class="alert-body">
@@ -75,7 +75,7 @@
                         <li class="alert" v-for="alert in alerts.low" :key="alert.message">
                             <div class="alert-header">
                                 <span class="moderate-label">{{ $t("report.low") }}</span>
-                                <span class="alert-id">{{ alert.id }}</span> 
+                                <span class="alert-id">{{ alert.id }}</span>
                                 <span class="btn-whitelist" v-on:click="add_whitelist(alert.host)">Add to the whitelist</span>
                             </div>
                             <div class="alert-body">
@@ -144,7 +144,7 @@
 <style>
 #app {
     overflow-y: visible;
-}   
+}
 </style>
 
 <script>
@@ -153,7 +153,7 @@ import axios from 'axios'
 import { EventBus } from "../main.js"
 
 export default {
-    name: 'report',   
+    name: 'report',
     data() {
         return {
             results: true,
@@ -186,11 +186,11 @@ export default {
                 if(this.alerts[level].length){
                     var idx;
                     var found;
-                    this.alerts[level].forEach((a) => { 
+                    this.alerts[level].forEach((a) => {
                         idx = a.title.indexOf(kw)
                         if(!found) found = idx>0;
-                    }); 
-                    return found; 
+                    });
+                    return found;
                 } else {
                     return false;
                 }
